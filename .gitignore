@@ -14,6 +14,7 @@ ProjectFlour/docs/note.txt
 ProjectFlour/docs/img.png
 ProjectFlour/docs/notWorkTest.txt
 ProjectFlour/Dockerfile.dev
+ProjectFlour/docker-compose.yaml
 ProjectFlour/Taskfile.yaml
 ProjectFlour/.mockery.yml
 
@@ -21,6 +22,7 @@ ProjectFlour/.mockery.yml
 master-flour/node_modules
 master-flour/dist
 master-flour/*.local
+master-flour/docker-compose.yaml
 master-flour/Taskfile.yaml
 
 master-flour/Dockerfile.local
