@@ -1,0 +1,111 @@
+name: Deploy Frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Tag which should be deployed"
+        required: true
+
+env:
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HOST: # TODO: add
+      DEPLOY_DIRECTORY: /root/apps/master-flour
+      SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tags }}
+
+      - name: Verify tag exists
+        run: |
+          git fetch --all --tags
+          if ! git tag | grep -q "^${{ github.event.inputs.tags }}$"; then
+            echo "[ERROR CUSTOM]: Tag ${{ github.event.inputs.tags }} does not exist"
+            exit 1
+          fi
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Setup Docker on server
+        run: |
+          ssh -o StrictHostKeyChecking=no $HOST '
+            if ! command -v docker &> /dev/null; then
+              echo "Installing Docker..."
+              apt-get update
+              apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+              add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              apt-get update
+              apt-get install -y docker-ce docker-ce-cli containerd.io
+              systemctl enable docker
+            fi
+
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Installing Docker Compose..."
+              curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+            fi
+          '
+
+      - name: Prepare deployment directory
+        run: |
+          ssh -o StrictHostKeyChecking=no $HOST "mkdir -p $DEPLOY_DIRECTORY"
+
+      - name: Copy all necessary files
+        run: |
+          mkdir -p .deploy-temp/ProjectFlour
+          mkdir -p .deploy-temp/master-flour
+
+          cp -r ProjectFlour/cmd .deploy-temp/ProjectFlour/
+          cp -r ProjectFlour/internal .deploy-temp/ProjectFlour/
+          cp -r ProjectFlour/pkg .deploy-temp/ProjectFlour/
+          cp -r ProjectFlour/config .deploy-temp/ProjectFlour/
+          cp -r ProjectFlour/storage .deploy-temp/ProjectFlour/
+          cp ProjectFlour/go.mod ProjectFlour/go.sum .deploy-temp/ProjectFlour/
+          cp ProjectFlour/Dockerfile .deploy-temp/ProjectFlour/
+
+          cp -r master-flour/* .deploy-temp/master-flour/
+
+          cp docker-compose.yaml .deploy-temp/
+
+          {
+            echo "DB_USER=flour_admin"
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+            echo "DB_NAME=flour_db"
+            echo "DB_HOST=db_postgres_prod"
+            echo "DB_PORT=5432"
+            echo "SSL_MODE=${{ secrets.SSL_MODE }}"
+            echo "APP_ENV=prod"
+            echo "VITE_API_URL=/api"
+          } > .deploy-temp/.env
+
+          scp -o StrictHostKeyChecking=no -r .deploy-temp/* $HOST:$DEPLOY_DIRECTORY/
+          rm -rf .deploy-temp
+
+      - name: Deploy application
+        run: |
+          ssh -o StrictHostKeyChecking=no $HOST "
+            cd $DEPLOY_DIRECTORY
+            docker compose --env-file .env down --volumes
+            docker compose --env-file .env up --build -d
+          "
+
+      - name: Verify deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no $HOST "
+            cd $DEPLOY_DIRECTORY
+            docker ps
+            sleep 10
+            curl -I http://localhost || true
+          "

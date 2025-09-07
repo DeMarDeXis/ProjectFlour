@@ -1,0 +1,397 @@
+definitions:
+  httpHandler.signInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.Partners:
+    properties:
+      email:
+        type: string
+      fullNameOfBoss:
+        type: string
+      id:
+        type: integer
+      inn:
+        type: string
+      legalAddress:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        type: string
+      rate:
+        type: integer
+      typeOrg:
+        type: string
+    type: object
+  model.Product:
+    properties:
+      article:
+        type: string
+      id:
+        type: integer
+      minPriceForPartner:
+        type: number
+      name:
+        type: string
+      typeProduct:
+        type: string
+    type: object
+  model.ProductsPartners:
+    properties:
+      dateOfSale:
+        type: string
+      id:
+        type: integer
+      partner:
+        type: string
+      priceForPartner:
+        type: number
+      product:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  model.TypeMaterial:
+    properties:
+      id:
+        type: integer
+      nameType:
+        type: string
+      percentOfMarriage:
+        type: number
+    type: object
+  model.TypeProduct:
+    properties:
+      coefficient:
+        type: number
+      id:
+        type: integer
+      nameType:
+        type: string
+    type: object
+  model.User:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: get token for user/client
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/httpHandler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create profile for new user/client
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: SignUp
+      tags:
+      - auth
+  /data/company/partners:
+    get:
+      description: Возвращает всех партнеров
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Partners'
+            type: array
+      summary: Получить всех партнеров
+      tags:
+      - partners
+  /data/company/product_partners:
+    get:
+      description: Возвращает все продукты партнера
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ProductsPartners'
+            type: array
+      summary: Получить все продукты партнера
+      tags:
+      - products
+  /data/company/products:
+    get:
+      description: Возвращает все продукты
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Product'
+            type: array
+      summary: Получить все продукты
+      tags:
+      - products
+  /data/company/types_of_materials:
+    get:
+      description: Возвращает все типы материалов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.TypeMaterial'
+            type: array
+      summary: Получить все типы материалов
+      tags:
+      - materials
+  /data/company/types_of_products:
+    get:
+      description: Возвращает все типы продуктов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.TypeProduct'
+            type: array
+      summary: Получить все типы продуктов
+      tags:
+      - products
+  /excel/import/partners:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and process Excel file to import partners
+      parameters:
+      - description: Excel file to upload (.xlsx, .xls)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import partners from Excel
+      tags:
+      - excel
+  /excel/import/product_partners:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and process Excel file to import product and partner relations
+      parameters:
+      - description: Excel file to upload (.xlsx, .xls)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import product and partner relations from Excel
+      tags:
+      - excel
+  /excel/import/products:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and process Excel file to import products
+      parameters:
+      - description: Excel file to upload (.xlsx, .xls)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import products from Excel
+      tags:
+      - excel
+  /excel/import/types_of_materials:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and process Excel file to import type materials
+      parameters:
+      - description: Excel file to upload (.xlsx, .xls)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import type material from Excel
+      tags:
+      - excel
+  /excel/import/types_of_products:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and process Excel file to import type products
+      parameters:
+      - description: Excel file to upload (.xlsx, .xls)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import type product from Excel
+      tags:
+      - excel
+swagger: "2.0"

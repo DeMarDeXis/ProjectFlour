@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  postgres_db_prod:
+    image: postgres:15-bullseye
+    container_name: db_postgres_prod
+    environment:
+      POSTGRES_USER: flour_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: flour_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-prod-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flour_admin -d flour_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - master-flour-network-system
+
+  backend_prod:
+    build:
+      context: ./ProjectFlour
+      dockerfile: Dockerfile
+    container_name: flour_backend_prod
+    depends_on:
+      postgres_db_prod:
+        condition: service_healthy
+    environment:
+      APP_ENV: prod
+      DB_PASSWORD: ${DB_PASSWORD}
+#      APP_ENV: ${APP_ENV}
+#      DB_USER: ${DB_USER}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_NAME: ${DB_NAME}
+#      DB_HOST: ${DB_HOST}
+#      DB_PORT: ${DB_PORT}
+#      SSL_MODE: ${SSL_MODE}
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - master-flour-network-system
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  migrator_prod:
+    image: migrate/migrate
+    depends_on:
+      postgres_db_prod:
+        condition: service_healthy
+    volumes:
+      - ./ProjectFlour/storage/migrations:/migrations
+    environment:
+      DB_HOST: db_postgres_prod
+      DB_PORT: 5432
+      DB_USER: flour_admin
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: flour_db
+      SSL_MODE: disable
+    command:
+        - -path=/migrations
+        - -database=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${SSL_MODE}
+        - up
+    networks:
+      - master-flour-network-system
+
+  frontend_prod:
+    build:
+      context: ./master-flour
+      dockerfile: Dockerfile
+#      args: // change code from docs
+#        VITE_API_URL: ${VITE_API_URL}
+    depends_on:
+      backend_prod:
+        condition: service_started
+    container_name: master_flour_frontend_site
+    ports:
+      - "80:80"
+    networks:
+      - master-flour-network-system
+
+
+volumes:
+  postgres-prod-db-data:
+
+networks:
+  master-flour-network-system:
+    driver: bridge
