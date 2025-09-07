@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy Fullstack
 
 on:
   workflow_dispatch:
@@ -17,6 +17,14 @@ jobs:
       HOST: ${{ secrets.SERVER_HOST }}
       DEPLOY_DIRECTORY: /root/apps/master-flour
       SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      DB_USER: flour_admin
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: flour_db
+      DB_HOST: db_postgres_prod
+      DB_PORT: "5432"
+      SSL_MODE: ${{ secrets.SSL_MODE }}
+      APP_ENV: prod
+      VITE_API_URL: /api
 
     steps:
       - name: Checkout repository
@@ -28,7 +36,7 @@ jobs:
         run: |
           git fetch --all --tags
           if ! git tag | grep -q "^${{ github.event.inputs.tags }}$"; then
-            echo "[ERROR CUSTOM]: Tag ${{ github.event.inputs.tags }} does not exist"
+            echo "[ERROR]: Tag ${{ github.event.inputs.tags }} does not exist"
             exit 1
           fi
 
@@ -41,7 +49,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $HOST '
             if ! command -v docker &> /dev/null; then
-              echo "Installing Docker..."
               apt-get update
               apt-get install -y apt-transport-https ca-certificates curl software-properties-common
               curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -52,53 +59,46 @@ jobs:
             fi
 
             if ! command -v docker-compose &> /dev/null; then
-              echo "Installing Docker Compose..."
               curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               chmod +x /usr/local/bin/docker-compose
             fi
+
+            docker network create master-flour-network-system || true
           '
 
       - name: Prepare deployment directory
         run: |
-          ssh -o StrictHostKeyChecking=no $HOST "mkdir -p $DEPLOY_DIRECTORY"
+          ssh -o StrictHostKeyChecking=no $HOST "mkdir -p $DEPLOY_DIRECTORY/{config,storage/migrations}"
 
       - name: Copy all necessary files
         run: |
           mkdir -p .deploy-temp/ProjectFlour
           mkdir -p .deploy-temp/master-flour
 
-          cp -r ProjectFlour/cmd .deploy-temp/ProjectFlour/
-          cp -r ProjectFlour/internal .deploy-temp/ProjectFlour/
-          cp -r ProjectFlour/pkg .deploy-temp/ProjectFlour/
-          cp -r ProjectFlour/config .deploy-temp/ProjectFlour/
-          cp -r ProjectFlour/storage .deploy-temp/ProjectFlour/
-          cp ProjectFlour/go.mod ProjectFlour/go.sum .deploy-temp/ProjectFlour/
-          cp ProjectFlour/Dockerfile .deploy-temp/ProjectFlour/
-
+          cp -r ProjectFlour/* .deploy-temp/ProjectFlour/
           cp -r master-flour/* .deploy-temp/master-flour/
-
           cp docker-compose.yaml .deploy-temp/
 
           {
-            echo "DB_USER=flour_admin"
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
-            echo "DB_NAME=flour_db"
-            echo "DB_HOST=db_postgres_prod"
-            echo "DB_PORT=5432"
-            echo "SSL_MODE=${{ secrets.SSL_MODE }}"
-            echo "APP_ENV=prod"
-            echo "VITE_API_URL=/api"
+            echo "DB_USER=$DB_USER"
+            echo "DB_PASSWORD=$DB_PASSWORD"
+            echo "DB_NAME=$DB_NAME"
+            echo "DB_HOST=$DB_HOST"
+            echo "DB_PORT=$DB_PORT"
+            echo "SSL_MODE=$SSL_MODE"
+            echo "APP_ENV=$APP_ENV"
+            echo "VITE_API_URL=$VITE_API_URL"
           } > .deploy-temp/.env
 
           scp -o StrictHostKeyChecking=no -r .deploy-temp/* $HOST:$DEPLOY_DIRECTORY/
           rm -rf .deploy-temp
 
-      - name: Deploy application
+      - name: Deploy fullstack application
         run: |
           ssh -o StrictHostKeyChecking=no $HOST "
             cd $DEPLOY_DIRECTORY
-            docker compose --env-file .env down --volumes
-            docker compose --env-file .env up --build -d
+            docker-compose --file docker-compose.yaml --env-file .env down --volumes
+            docker-compose --file docker-compose.yaml --env-file .env up --build -d
           "
 
       - name: Verify deployment
