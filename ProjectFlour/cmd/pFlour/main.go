@@ -89,7 +89,7 @@ func main() {
 	}).Handler(routesToSrv)
 
 	// init server
-	httpSRV := httpServer.New(logg, cfg.HTTPServer, handlerWithCors) // Instead of routesToSкм
+	httpSRV := httpServer.New(logg, cfg.HTTPServer, handlerWithCors) // Instead of routesToSrv
 	//httpSRV := httpServer.New(logg, cfg.HTTPServer, routesToSrv) // TODO: change it
 
 	// add websocket handlers
@@ -164,8 +164,9 @@ func initSlogPretty() *slog.Logger {
 	return slog.New(handl)
 }
 
-// TODO: i need to fill all env values in current remote GitHub
 // TODO: make template's downloader for excel files [12.08.2025] [MAIN] - Now it's under development
+//		internal/service/TemplateMakerForExcel
+
 // TODO: mockery business must be correct <-- It's in progress...
 //		packages:
 //			ProjectFlour/internal/storage:

@@ -9,6 +9,9 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
+// TODO: delete logs there =>
+//      WelcomePage
+
 // TODO: hacer correctamente el deploy (10.08.2025)
 // TODO: src/components/Notifications.tsx (13.08.2025)
 //  retries for websocket
@@ -20,3 +23,4 @@ createRoot(document.getElementById('root')!).render(
 // TODO[Deploy]:
 //  заменить некоторые значения на переменные окружения
 //  pensar sobre mejoras para docker que estan en el docs
+//  integration with backend tamplate maker

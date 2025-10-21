@@ -20,10 +20,7 @@ export default defineConfig(({ mode }) => {
       },
       proxy:{
         '/api': {
-          // target: 'http://backend_dev:8080', // para local
-          // target: process.env.VITE_API_URL, // para dev/prod
           target: env.VITE_API_URL, // para dev/prod
-          // target: process.env.VITE_API_URL || 'http://hoooooosttttt:8080',
           changeOrigin: true,
         },
         '/ws': {
@@ -32,6 +29,18 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true
         }
       },
+      // proxy:{ //DEV Divide
+      //   '/api': {
+      //     target: 'http://flour_backend:8080',
+      //     changeOrigin: true,
+      //     rewrite: (path) => path.replace(/^\/api/, ''),
+      //   },
+      //   '/ws': {
+      //     target: 'http://flour_backend:8081',
+      //     ws: true,
+      //     changeOrigin: true
+      //   }
+      // },
     }
   }
 })

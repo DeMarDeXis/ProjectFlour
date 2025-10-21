@@ -1,32 +1,15 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
+import HeaderComponent from '../../components/mainHeader/MainHeaderComponent.tsx';
 import './welcome_style.css';
 import logo from '../../assets/masterflour.png';
 
 const WelcomePage: React.FC = () => {
-    console.log('WelcomePage is rendering');
     const navigation = useNavigate();
-
-    const navigateTGChannel = () => {
-        console.log("Navigate to Telegram channel");
-    };
-
 
     return (
         <div className="welcome-container">
-            <header className="welcome-header">
-                <div className="header-content">
-                    <h1>Мастер Пол</h1>
-                    <div className="navbar">
-                        <ul>
-                            {/*TODO: To learn types of button*/}
-                            <li><button type="submit" className="Catalog-But">Каталог</button></li>
-                            <li><img src={"https://i.pinimg.com/736x/2a/43/5a/2a435a6985dfc24fa1cda76c5507cd30.jpg"}
-                                     alt={"There must be TG"} className={"tg-logo"} onSubmit={navigateTGChannel}/></li>
-                        </ul>
-                    </div>
-                </div>
-            </header>
+            <HeaderComponent />
             <div className="background-container">
                 <div className="logo-container">
                     <img src={logo} alt="There is must be a logo" className="logo" />

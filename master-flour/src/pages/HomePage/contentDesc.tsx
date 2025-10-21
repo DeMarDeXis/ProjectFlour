@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Notifications } from "../../components/Notifications";
+import OverlayTemplate from "./components/overlay-detail.tsx"
 import apiFetch from "../../utils/apiFetch.tsx"
 import "./contentStyle.css"
 import "./home_style.css"
@@ -249,18 +250,18 @@ export const ImportContent = () => {
         }
     };
 
+    const operationList: OperationList = {
+        "Material_type_import": "types_of_materials",
+        "Product_type_import": "types_of_products",
+        "Products_import": "products",
+        "Partners_import": "partners",
+        "Partner_products_import": "product_partners"
+    }
+
     const handleUpload = async () => {
         if (!selectedFile) {
             setUploadStatus("Пожалуйста, выберите файл для загрузки.");
             return;
-        }
-
-        const operationList: OperationList = {
-            "Material_type_import": "types_of_materials",
-            "Product_type_import": "types_of_products",
-            "Products_import": "products",
-            "Partners_import": "partners",
-            "Partner_products_import": "product_partners"
         }
 
         const fileNameWithoutExtension = selectedFile.name.split('.')[0];
@@ -297,6 +298,38 @@ export const ImportContent = () => {
         }
     };
 
+    const handleDownloadTemplateXlsx = async (template_path: string) => {
+        try {
+            const jwtToken = localStorage.getItem("token");
+
+            const response = await fetch(`/api/excel/template/${template_path}`, { //TODO: types_of_products(old_delete)
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${jwtToken}`,
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ошибка при загрузке шаблона: ${response.status}`)
+            }
+
+            const blobData = await response.blob();
+
+            const url = window.URL.createObjectURL(blobData);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${template_path}_template.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Ошибка при загрузке шаблона", err);
+        }
+    };
+
     return (
         <div className={"content-section"}>
             <h2>Импорт данных</h2>
@@ -309,6 +342,10 @@ export const ImportContent = () => {
                 onClick={handleUpload}>Загрузить файл</button>
                 {uploadStatus && <p>{uploadStatus}</p>}
             </div>
+            <OverlayTemplate
+                handleDownloadTemplateFile={handleDownloadTemplateXlsx}
+                operationList={operationList}
+            />
         </div>
     );
 };

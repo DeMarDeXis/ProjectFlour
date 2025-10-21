@@ -394,4 +394,23 @@ paths:
       summary: Import type product from Excel
       tags:
       - excel
+  /excel/template/types_of_products:
+    get:
+      description: Method for create template excel file for import products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: TemplateTypeProduct maker
+      tags:
+      - excel
 swagger: "2.0"

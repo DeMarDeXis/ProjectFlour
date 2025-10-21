@@ -189,14 +189,20 @@
 
 .import-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     gap: 15px;
     max-width: 400px;
 }
 
+.import-section input {
+    color: var(--subactivity-hover-color);
+    background-color: var(--second-bg-color);
+}
+
 .import-button {
     padding: 10px 20px;
-    background: #007bff;
+    background: var(--activity-color);
     color: white;
     border: none;
     border-radius: 4px;

@@ -20,6 +20,14 @@ type ExcelHandlerInterface interface {
 	ImportProductPartners(w http.ResponseWriter, r *http.Request)
 }
 
+type TemplateExcelInterface interface {
+	TemplateTypeProduct(w http.ResponseWriter, r *http.Request)
+	TemplateTypesMaterial(w http.ResponseWriter, r *http.Request)
+	TemplatePartners(w http.ResponseWriter, r *http.Request)
+	TemplateProducts(w http.ResponseWriter, r *http.Request)
+	TemplateProductsPartners(w http.ResponseWriter, r *http.Request)
+}
+
 type ProductsHTTPMethods interface {
 	GetAllTypesMaterial(w http.ResponseWriter, r *http.Request)
 	GetAllTypeProduct(w http.ResponseWriter, r *http.Request)
@@ -30,6 +38,7 @@ type ProductsHTTPMethods interface {
 
 type HTTPHandler struct {
 	ExcelHandlerInterface
+	TemplateExcelInterface
 	ProductsHTTPMethods
 	service *service.Service
 	logg    *slog.Logger
@@ -37,10 +46,11 @@ type HTTPHandler struct {
 
 func NewHTTTPHandler(service *service.Service, logg *slog.Logger) *HTTPHandler {
 	return &HTTPHandler{
-		ExcelHandlerInterface: excelHand.NewExcelHTTPHandler(service.ExcelImportService, logg),
-		ProductsHTTPMethods:   dataHandler.NewProductsHTTPHandler(service.ProductsService, logg),
-		service:               service,
-		logg:                  logg,
+		ExcelHandlerInterface:  excelHand.NewExcelHTTPHandler(service.ExcelImportService, logg),
+		TemplateExcelInterface: excelHand.NewExcelTemplateHandler(service.TemplateMakerForExcel, logg),
+		ProductsHTTPMethods:    dataHandler.NewProductsHTTPHandler(service.ProductsService, logg),
+		service:                service,
+		logg:                   logg,
 	}
 }
 
@@ -72,6 +82,13 @@ func (h *HTTPHandler) InitRoutes(logg *slog.Logger) chi.Router {
 			reximp.Post("/products", h.ExcelHandlerInterface.ImportProducts)
 			reximp.Post("/partners", h.ExcelHandlerInterface.ImportPartners)
 			reximp.Post("/product_partners", h.ExcelHandlerInterface.ImportProductPartners)
+		})
+		rex.Route("/template", func(rextemp chi.Router) {
+			rextemp.Get("/types_of_products", h.TemplateExcelInterface.TemplateTypeProduct)
+			rextemp.Get("/types_of_materials", h.TemplateExcelInterface.TemplateTypesMaterial)
+			rextemp.Get("/products", h.TemplateExcelInterface.TemplateProducts)
+			rextemp.Get("/partners", h.TemplateExcelInterface.TemplatePartners)
+			rextemp.Get("/product_partners", h.TemplateExcelInterface.TemplateProductsPartners)
 		})
 	})
 

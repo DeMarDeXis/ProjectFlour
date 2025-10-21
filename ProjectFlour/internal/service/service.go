@@ -21,6 +21,14 @@ type ExcelImportService interface {
 	AddProductPartnersFromExcel(filepath string) error
 }
 
+type TemplateMakerForExcel interface {
+	CreateTemplateTypeProduct() ([]byte, error)
+	CreateTemplateTypeMaterials() ([]byte, error)
+	CreateTemplatePartners() ([]byte, error)
+	CreateTemplateProducts() ([]byte, error)
+	CreateTemplateProductsPartners() ([]byte, error)
+}
+
 type ProductsService interface {
 	//AddTypeMaterial
 	GetAllTypesMaterial() (*[]model.TypeMaterial, error)
@@ -37,15 +45,17 @@ type ProductsService interface {
 type Service struct {
 	AuthService
 	ExcelImportService
+	TemplateMakerForExcel
 	ProductsService
 	eventBus *events.EventBus
 }
 
-func New(storage *storage.Storage, eb *events.EventBus) *Service {
+func New(storage *storage.Storage, evbus *events.EventBus) *Service {
 	return &Service{
-		AuthService:        NewAuthService(storage),
-		ExcelImportService: excelHandler.New(storage, eb),
-		ProductsService:    NewProductsService(storage),
-		eventBus:           eb,
+		AuthService:           NewAuthService(storage),
+		ExcelImportService:    excelHandler.New(storage, evbus),
+		TemplateMakerForExcel: excelHandler.NewTemplateMaker(),
+		ProductsService:       NewProductsService(storage),
+		eventBus:              evbus,
 	}
 }
