@@ -44,6 +44,296 @@
     gap: 15px;
 }
 
+
+/* ----------------TODO:NOTE FIX DUPLICATE CODE---------------*/
+
+.notifications-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.notifications-button {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.notifications-button:hover {
+    transform: scale(1.1);
+}
+
+.notifications-icon {
+    position: relative;
+}
+
+.notifications-count {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: #ff4444; /*TODO DEBUG*/
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.notifications-overlay {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    width: 350px;
+    max-height: 500px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1000;
+    animation: slideDown 0.3s ease-out;
+    overflow: hidden;
+    border: 3px solid var(--activity-color);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notifications-header {
+    background: linear-gradient(135deg, var(--subactivity-hover-color) 0%, var(--second-bg-color) 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.notifications-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notifications-title-icon {
+    font-size: 1.3rem;
+}
+
+.notifications-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.notifications-close-btn:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.notifications-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: var(--default-bg-color);
+}
+
+.notifications-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.notifications-list::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 4px;
+}
+
+.notifications-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.notifications-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.notification-item {
+    background: white;
+    border-left: 4px solid #4CAF50;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background-color: #e3f2fd;
+}
+
+.notification-item.unread {
+    background-color: #fff3cd;
+    border-left-color: #ffc107;
+}
+
+.notification-item.error {
+    border-left-color: #dc3545;
+}
+
+.notification-item.warning {
+    border-left-color: #ffc107;
+}
+
+.notification-item.info {
+    border-left-color: #17a2b8;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.notification-type {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+}
+
+.notification-type.success {
+    background-color: #28a745;
+}
+
+.notification-type.error {
+    background-color: #dc3545;
+}
+
+.notification-type.warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.notification-type.info {
+    background-color: #17a2b8;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #666;
+    margin-left: 8px;
+}
+
+.notification-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.notification-message {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.notifications-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+.notifications-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    opacity: 0.3;
+}
+
+.notifications-footer {
+    padding: 10px 20px;
+    border-top: 2px solid #ddd;
+    text-align: center;
+}
+
+.notifications-footer button {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.notifications-footer button:hover {
+    background-color: #5568d3;
+}
+
+@keyframes notificationSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.notification-item {
+    animation: notificationSlideIn 0.3s ease-out;
+}
+
+.notifications-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: #ff4444;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/*TODO: destroy later*/
+
 .profile-button {
     display: flex;
     align-items: center;
@@ -52,7 +342,7 @@
     border: none;
     cursor: pointer;
     /*TODO: think about color*/
-    /*color: var(--activity-color);*/
+    color: var(--activity-color);
     font-size: 1.2rem;
 }
 
@@ -109,7 +399,7 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     z-index: 95;
     /*TODO: think about color*/
-    /*color: var(--text-color);*/
+    /*color: var(--activity-color);*/
 }
 
 .panel-button {
@@ -189,14 +479,20 @@
 
 .import-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     gap: 15px;
     max-width: 400px;
 }
 
+.import-section input {
+    color: var(--subactivity-hover-color);
+    background-color: var(--second-bg-color);
+}
+
 .import-button {
     padding: 10px 20px;
-    background: #007bff;
+    background: var(--activity-color);
     color: white;
     border: none;
     border-radius: 4px;

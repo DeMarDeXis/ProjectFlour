@@ -27,6 +27,12 @@ const (
 	envProd  = "prod"
 )
 
+// @title ProjectFlour
+// @version 1.0
+// @description This is a project flour API server.
+// @host localhost:8080
+// @host localhost:8081
+// @BasePath /
 func main() {
 	// parse flags
 	var configPath = flag.String("config", "", "Path to config file (e.g. -config=config/config.yaml)")
@@ -89,8 +95,7 @@ func main() {
 	}).Handler(routesToSrv)
 
 	// init server
-	httpSRV := httpServer.New(logg, cfg.HTTPServer, handlerWithCors) // Instead of routesToSкм
-	//httpSRV := httpServer.New(logg, cfg.HTTPServer, routesToSrv) // TODO: change it
+	httpSRV := httpServer.New(logg, cfg.HTTPServer, handlerWithCors)
 
 	// add websocket handlers
 	wsHanlers := webSocketHandler.New(logg, eventBus)
@@ -164,8 +169,6 @@ func initSlogPretty() *slog.Logger {
 	return slog.New(handl)
 }
 
-// TODO: i need to fill all env values in current remote GitHub
-// TODO: make template's downloader for excel files [12.08.2025] [MAIN] - Now it's under development
 // TODO: mockery business must be correct <-- It's in progress...
 //		packages:
 //			ProjectFlour/internal/storage:
@@ -190,3 +193,5 @@ func initSlogPretty() *slog.Logger {
 // 	rate_limiting:
 // 		enabled: true
 // 		requests_per_minute: 1000
+
+// TODO: service/templateMaker.go

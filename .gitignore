@@ -4,6 +4,8 @@
 .dev.env
 .log
 Taskfile.yml
+docs/note.txt
+
 
 ProjectFlour/tmp/
 ProjectFlour/temp/
@@ -11,8 +13,8 @@ ProjectFlour/temp/
 ProjectFlour/config/local.yaml
 ProjectFlour/config/dev.yaml
 ProjectFlour/docs/note.txt
-ProjectFlour/docs/img.png
-ProjectFlour/docs/notWorkTest.txt
+ProjectFlour/docs/selectel_review.png
+ProjectFlour/docs/TODO_integration_test_template_maker_19102025.txt
 ProjectFlour/Dockerfile.dev
 ProjectFlour/docker-compose.yaml
 ProjectFlour/Taskfile.yaml
