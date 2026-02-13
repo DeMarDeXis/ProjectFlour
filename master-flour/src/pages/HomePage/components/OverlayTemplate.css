@@ -76,7 +76,7 @@
     background-color: #c0392b;
 }
 
-/* Кнопки внутри оверлея */
+/* -----------INSIDE----------- */
 .buttons-grid {
     display: grid;
     gap: 15px;

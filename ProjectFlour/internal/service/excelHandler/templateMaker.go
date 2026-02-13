@@ -6,6 +6,9 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+// TODO: for headers and their width should make struct instead of double slices
+// TODO: ROW with data example for user for each function
+
 const (
 	defaultSheet = "Sheet1"
 )
@@ -17,10 +20,13 @@ func NewTemplateMaker() *TemplateMaker {
 	return &TemplateMaker{}
 }
 
-// TODO:[example row] set example separeted row in this function
 func (t *TemplateMaker) CreateTemplateTypeProduct() ([]byte, error) {
 	const op = "internal.service.excelHandler.templateMaker.go"
 	const fileName = "Product_type_import"
+	var (
+		headers         = []string{"Тип продукции", "Коэффициент типа продукции"}
+		widthForHeaders = []float64{15, 30}
+	)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -29,22 +35,43 @@ func (t *TemplateMaker) CreateTemplateTypeProduct() ([]byte, error) {
 		}
 	}()
 
-	err := f.DeleteSheet(defaultSheet)
+	err := f.SetSheetName(defaultSheet, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = f.NewSheet(fileName)
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string('A'+rune(i)))
+		if err := f.SetCellValue(fileName, cell, header); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	style, err := f.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Bold: true,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	f.SetCellValue(fileName, "A1", "Тип продукции")
-	f.SetCellValue(fileName, "B1", "Коэффициент типа продукции")
+	if err := f.SetCellStyle(fileName, "A1", fmt.Sprintf("%s1", string('A'+rune(len(headers)-1))), style); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
 
-	// TODO: for what exist method 'f.WriteToBuf'. Explore it
+	for i := 0; i < len(headers); i++ {
+		col := string('A' + rune(i))
+		if err := f.SetColWidth(fileName, col, col, widthForHeaders[i]); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
 	buf := new(bytes.Buffer)
-
 	if err := f.Write(buf); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -52,10 +79,13 @@ func (t *TemplateMaker) CreateTemplateTypeProduct() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// TODO: to test it
 func (t *TemplateMaker) CreateTemplateTypeMaterials() ([]byte, error) {
 	const op = "internal.service.excelHandler.templateMaker.CreateTemplateTypeMaterials"
 	const fileName = "Material_type_import"
+	var (
+		headers        = []string{"Тип материала", "Процент брака материала"}
+		widthForHeader = []float64{15, 30}
+	)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -64,21 +94,43 @@ func (t *TemplateMaker) CreateTemplateTypeMaterials() ([]byte, error) {
 		}
 	}()
 
-	err := f.DeleteSheet(defaultSheet)
+	err := f.SetSheetName(defaultSheet, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = f.NewSheet(fileName)
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string('A'+rune(i)))
+		if err := f.SetCellValue(fileName, cell, header); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	style, err := f.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Bold: true,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	f.SetCellValue(fileName, "A1", "Тип материала")
-	f.SetCellValue(fileName, "B1", "Процент брака материала")
+	if err := f.SetCellStyle(fileName, "A1", fmt.Sprintf("%s1", string('A'+rune(len(headers)-1))), style); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	for i := 0; i < len(headers); i++ {
+		col := string('A' + rune(i))
+		if err := f.SetColWidth(fileName, col, col, widthForHeader[i]); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
 
 	buf := new(bytes.Buffer)
-
 	if err := f.Write(buf); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -89,6 +141,11 @@ func (t *TemplateMaker) CreateTemplateTypeMaterials() ([]byte, error) {
 func (t *TemplateMaker) CreateTemplatePartners() ([]byte, error) {
 	const op = "internal.service.excelHandler.templateMaker.CreateTemplatePartners"
 	const fileName = "Partners_import"
+	var (
+		headers = []string{"Тип партнера", "Наименование партнера", "Диретор", "Электронная почта партнера",
+			"Телефон партнера", "Юридический адрес партнера", "ИНН", "Рейтинг"}
+		widthForHeaders = []float64{15, 25, 10, 30, 25, 30, 5, 10}
+	)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -97,24 +154,41 @@ func (t *TemplateMaker) CreateTemplatePartners() ([]byte, error) {
 		}
 	}()
 
-	err := f.DeleteSheet(defaultSheet)
+	err := f.SetSheetName(defaultSheet, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = f.NewSheet(fileName)
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string('A'+rune(i)))
+		if err := f.SetCellValue(fileName, cell, header); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	style, err := f.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Bold: true,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	f.SetCellValue(fileName, "A1", "Тип партнера")
-	f.SetCellValue(fileName, "B1", "Наименование партнера")
-	f.SetCellValue(fileName, "C1", "Директор")
-	f.SetCellValue(fileName, "D1", "Электронная почта партнера")
-	f.SetCellValue(fileName, "E1", "Телефон партнера")
-	f.SetCellValue(fileName, "F1", "Юридический адрес партнера")
-	f.SetCellValue(fileName, "G1", "ИНН")
-	f.SetCellValue(fileName, "H1", "Рейтинг")
+	if err := f.SetCellStyle(fileName, "A1", fmt.Sprintf("%s1", string('A'+rune(len(headers)-1))), style); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	for i := 0; i < len(headers); i++ {
+		col := string('A' + rune(i))
+		if err := f.SetColWidth(fileName, col, col, widthForHeaders[i]); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
 
 	buf := new(bytes.Buffer)
 
@@ -130,6 +204,11 @@ func (t *TemplateMaker) CreateTemplateProducts() ([]byte, error) {
 		op       = "internal.service.excelHandler.templateMaker.go"
 		fileName = "Products_import"
 	)
+	var (
+		headers = []string{"Тип продукции", "Наименование продукции",
+			"Артикул", "Минимальная стоимость для партнера"}
+		widthForHeaders = []float64{15, 25, 10, 40}
+	)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -138,20 +217,41 @@ func (t *TemplateMaker) CreateTemplateProducts() ([]byte, error) {
 		}
 	}()
 
-	err := f.DeleteSheet(defaultSheet)
+	err := f.SetSheetName(defaultSheet, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = f.NewSheet(fileName)
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string('A'+rune(i)))
+		if err := f.SetCellValue(fileName, cell, header); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	style, err := f.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Bold: true,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	f.SetCellValue(fileName, "A1", "Тип продукции")
-	f.SetCellValue(fileName, "B1", "Наименование продукции")
-	f.SetCellValue(fileName, "C1", "Артикул")
-	f.SetCellValue(fileName, "D1", "Минимальная стоимость для партнера")
+	if err := f.SetCellStyle(fileName, "A1", fmt.Sprintf("%s1", string('A'+rune(len(headers)-1))), style); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	for i := 0; i < len(headers); i++ {
+		col := string('A' + rune(i))
+		if err := f.SetColWidth(fileName, col, col, widthForHeaders[i]); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
 
 	buf := new(bytes.Buffer)
 
@@ -167,6 +267,11 @@ func (t *TemplateMaker) CreateTemplateProductsPartners() ([]byte, error) {
 		op       = "internal.service.excelHandler.templateMaker.go.Partner_products_import"
 		fileName = "Partner_products_import"
 	)
+	var (
+		headers = []string{"Продукция", "Наименование партнера",
+			"Количество продукции", "Дата продажи"}
+		widthForHeaders = []float64{15, 25, 25, 15}
+	)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -176,20 +281,41 @@ func (t *TemplateMaker) CreateTemplateProductsPartners() ([]byte, error) {
 		}
 	}()
 
-	err := f.DeleteSheet(defaultSheet)
+	err := f.SetSheetName(defaultSheet, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = f.NewSheet(fileName)
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string('A'+rune(i)))
+		if err := f.SetCellValue(fileName, cell, header); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	style, err := f.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Bold: true,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	f.SetCellValue(fileName, "A1", "Продукция")
-	f.SetCellValue(fileName, "B1", "Наименование партнера")
-	f.SetCellValue(fileName, "C1", "Количество продукции")
-	f.SetCellValue(fileName, "D1", "Дата продажи")
+	if err := f.SetCellStyle(fileName, "A1", fmt.Sprintf("%s1", string('A'+rune(len(headers)-1))), style); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	for i := 0; i < len(headers); i++ {
+		col := string('A' + rune(i))
+		if err := f.SetColWidth(fileName, col, col, widthForHeaders[i]); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	}
 
 	buf := new(bytes.Buffer)
 

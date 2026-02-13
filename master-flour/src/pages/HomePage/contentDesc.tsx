@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Notifications } from "../../components/Notifications";
+import { Notifications } from "../../components/notifications/Notifications.tsx";
 import OverlayTemplate from "./components/overlay-detail.tsx"
 import apiFetch from "../../utils/apiFetch.tsx"
 import "./contentStyle.css"
@@ -104,8 +104,6 @@ export const MainContent = () => {
         <div className="content-section">
             <h2>Главная</h2>
             <p>Добро пожаловать в систему управления проектами Мастер Пол</p>
-
-            <Notifications />
 
             <div className="dashboard-cards">
                 <div className="card card-content">
@@ -214,7 +212,7 @@ export const ProjectsContent = () => {
                 ))}
             </div>
 
-            {/* Загрузка / Ошибка / Таблица */}
+            {/* LOAD / ERR / DTABLE */}
             {loading && <p>Загрузка данных...</p>}
             {error && <p style={{color: "red"}}>{error}</p>}
             {!loading && !error && tableData.length > 0 && (
@@ -362,5 +360,7 @@ export const SettingsContent = () => (
             <input type={"checkbox"}/> Темная тема
             </label>
         </div>
+
+        <Notifications />
     </div>
 );

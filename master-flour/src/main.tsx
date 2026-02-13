@@ -12,11 +12,11 @@ createRoot(document.getElementById('root')!).render(
 // TODO: delete logs there =>
 //      WelcomePage
 
-// TODO: hacer correctamente el deploy (10.08.2025)
-// TODO: src/components/Notifications.tsx (13.08.2025)
+// TODO: hacer correctamente el deploy
+// TODO: src/components/Notifications.tsx
 //  retries for websocket
 // TODO: Si apiFetch funciona bien, hacer todos fetches con el
-// TODO: correctamente terminar el session si el usuario no esta logueado y no tenga token (10.08.2025)
+// TODO: correctamente terminar el session si el usuario no esta logueado y no tenga token
 //  Si es un error 401, redirigir a la pagina de login
 //  Entonces, si funciona bien, quitalo
 
@@ -24,3 +24,5 @@ createRoot(document.getElementById('root')!).render(
 //  заменить некоторые значения на переменные окружения
 //  pensar sobre mejoras para docker que estan en el docs
 //  integration with backend tamplate maker
+//  fix duplicate code
+//  return pckg-manager Zustand[MAIN]

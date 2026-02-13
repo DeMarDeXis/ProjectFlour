@@ -1,6 +1,18 @@
 # "ProjectFlour" project
 ## FullStack Web Development with React and Golang
 ![ProjectFLourLogo](./Wallpaper.png) \
+
+### Как запустить проект:
+```
+docker-compose up --build
+```
+
+```
+docker-compose down --volumes
+```
+
+
+
 Stack:
 + Frontend: **React.js**+**TypeScript**+**Vite**
 ```

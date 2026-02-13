@@ -18,9 +18,10 @@ export default defineConfig(({ mode }) => {
         usePolling: true,
         interval: 1000
       },
+      // para dev/prod[MAIN]
       proxy:{
         '/api': {
-          target: env.VITE_API_URL, // para dev/prod
+          target: env.VITE_API_URL,
           changeOrigin: true,
         },
         '/ws': {
@@ -29,7 +30,8 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true
         }
       },
-      // proxy:{ //DEV Divide
+      //DEV Divide
+      // proxy:{
       //   '/api': {
       //     target: 'http://flour_backend:8080',
       //     changeOrigin: true,

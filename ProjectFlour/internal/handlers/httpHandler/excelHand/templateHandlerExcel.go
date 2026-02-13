@@ -38,9 +38,9 @@ func (h *ExcelTemplateHandler) TemplateTypeProduct(w http.ResponseWriter, r *htt
 		return
 	}
 
-	w.Header().Set("ContentType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName+extensionExcel))
-	httplib.NewStatusResponse(w, h.logg, http.StatusOK, "OK")
+	//httplib.NewStatusResponse(w, h.logg, http.StatusOK, "OK")
 
 	_, err = w.Write(fileData)
 	if err != nil {

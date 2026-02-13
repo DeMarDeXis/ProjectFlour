@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {MainContent, ProjectsContent, ScheduleContent, ImportContent, SettingsContent} from "./contentDesc.tsx";
+import {NotificationsOverlay} from '../../components/notifications/overlay.tsx'
 import logo from '../../assets/masterflour.png';
 import './home_style.css';
 
@@ -9,6 +10,7 @@ const HomePage = () => {
     const navigate = useNavigate();
     const [isPanelOpen, setPanelOpen] = useState(true);
     const [activeSection, setActiveSection] = useState("home");
+    const [showNotifications, setShowNotifications] = useState(false);
 
 
     const handleLogOut = () => {
@@ -22,6 +24,10 @@ const HomePage = () => {
 
     const handleSectionChange = (sectionID: string) => {
         setActiveSection(sectionID);
+    };
+
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
     };
 
     const panelButtons = [
@@ -59,6 +65,21 @@ const HomePage = () => {
                     <span className={"app-name"}>Мастер пол</span>
                 </div>
                 <div className={"header-right"}>
+                    <div className={"notifications-wrapper"}>
+                        <button
+                            className={"notifications-button"}
+                            onClick={toggleNotifications}
+                        >
+                            <span className={"notifications-icon"}>🔔</span>
+                            {/*<span className={"notifications-count"}>3</span>TODO: make counter*/}
+                        </button>
+                        {showNotifications && (
+                            <div className={"notifications-overlay"}>
+                                <NotificationsOverlay onClose={() => setShowNotifications(false)} />
+                            </div>
+                        )}
+                    </div>
+
                     <button className={"profile-button"}>
                         <span className={"profile-icon"}>👤</span>
                         <span className={"profile-text"}>Профиль</span>
